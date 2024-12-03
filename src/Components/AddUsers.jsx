@@ -8,9 +8,14 @@ const AddUsers = () => {
     const email = form.email.value;
     const gender = form.gender.value;
     const status = form.status.value;
-    const user = { name, email, gender, status };
+    const isCompleted =  false;
+
+
+    const user = { name, email, gender, status,isCompleted };
+
+    
     console.log(user);
-    fetch("https://user-management-server-blush.vercel.app/users", {
+    fetch("http://localhost:5000/users", {
       method: "POST",
       headers: {
         "content-type": "application/json",

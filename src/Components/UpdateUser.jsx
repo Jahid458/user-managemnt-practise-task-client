@@ -14,7 +14,7 @@ const UpdateUser = () => {
     const status = form.status.value;
     const updateduser = { name, email, gender, status };
     console.log(updateduser);
-    fetch(`https://user-management-server-blush.vercel.app/users/${_id}`, {
+    fetch(`http://localhost:5000/users/${_id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",

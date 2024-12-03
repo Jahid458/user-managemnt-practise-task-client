@@ -1,12 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiEdit } from "react-icons/ci";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdDone, MdOutlineDoneAll } from "react-icons/md";
 import { Link, useLoaderData } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const Users = () => {
   const loadeduserList = useLoaderData();
   const [users, setUsers] = useState(loadeduserList);
+  const [search, setSearch] = useState("");
+  // const isCompleted = true;
+  // const { isCompleted } = users;
+
+  // console.log(search)
+
+  useEffect(() => {
+    fetch(`http://localhost:5000/users?search=${search}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setUsers(data);
+      });
+  }, [search]);
 
   const handleUserDelete = (id) => {
     Swal.fire({
@@ -20,7 +33,7 @@ const Users = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         //delete fronm the databaase
-        fetch(`https://user-management-server-blush.vercel.app/users/${id}`, {
+        fetch(`http://localhost:5000/users/${id}`, {
           method: "DELETE",
         })
           .then((res) => res.json())
@@ -39,10 +52,35 @@ const Users = () => {
     });
   };
 
+  ///update/:id
+  const handleUpdate = (id) => {
+    console.log(id);
+    //update fronm the databaase
+    fetch(`http://localhost:5000/update/${id}`, {
+      method: "PUT",
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        console.log(result);
+        const newUser = users?.map((user) =>
+          user._id == id ? { ...user, isCompleted: true } : user
+        );
+        setUsers(newUser);
+        console.log(newUser);
+      });
+  };
+
   return (
     <div>
       <h2 className="text-3xl text-center">Users List:{users.length}</h2>
-
+      <div className="text-center mb-4">
+        <input
+          type="text"
+          placeholder="Type here"
+          onChange={(e) => setSearch(e.target.value)}
+          className="input input-bordered w-full max-w-xs"
+        />
+      </div>
       <div className="overflow-x-auto">
         <table className="table">
           {/* head */}
@@ -58,7 +96,7 @@ const Users = () => {
           </thead>
           <tbody>
             {/* row 1 */}
-            {users.map((user, index) => (
+            {users?.map((user, index) => (
               <tr key={user._id}>
                 <th>{index + 1}</th>
                 <td>{user.name}</td>
@@ -78,7 +116,15 @@ const Users = () => {
                   >
                     <MdDelete></MdDelete>
                   </button>
+
+                  <button
+                    onClick={() => handleUpdate(user._id)}
+                    className="bg-pink-500 px-4 py-2 rounded text-white"
+                  >
+                    {user?.isCompleted ? <MdOutlineDoneAll /> : <MdDone />}
+                  </button>
                 </td>
+                <td></td>
               </tr>
             ))}
           </tbody>
